@@ -62,9 +62,6 @@ object Update {
                         if (url != null) {
                             itemCompletableFutures.add(CompletableFuture.supplyAsync(Supplier {
                                 val itemHtml = okHttp.getString(url)
-                                if (itemHtml.contains("Notes Regarding Customs Clearance")) {
-                                    throw IllegalArgumentException("Notes Regarding Customs Clearance for url = $url")
-                                }
                                 val title = Jsoup.parse(itemHtml, baseUrl).select("#title > h2")?.first()?.text()
                                         ?: throw NullPointerException("Title not found for item $urlFull")
                                 UpdateItem(url, title, image ?: "", price ?: "", discount ?: "")
