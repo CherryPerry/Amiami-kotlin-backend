@@ -13,6 +13,7 @@ Returns currencies from [fixer.io](http://fixer.io/)
 
 ##Installation
 You need the following to run server:
+
 1. Oracle JDK 8
 1. MongoDB
 1. curl for update script
