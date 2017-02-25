@@ -2,8 +2,10 @@ package com.cherryperry.amiami
 
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
+@EnableScheduling
 open class App {
     companion object {
         @JvmStatic fun main(args: Array<String>) {

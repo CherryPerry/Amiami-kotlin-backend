@@ -29,9 +29,26 @@ object Update {
             }
             .build()
 
-    @Synchronized
+    private var syncInProgress = false
+
     fun sync() {
         log.trace("sync")
+        if (syncInProgress) {
+            log.warn("Sync already in progress!")
+            return
+        }
+        syncInProgress = true
+        try {
+            doSync()
+        } catch (e: Exception) {
+            log.error(e)
+        } finally {
+            syncInProgress = false
+        }
+    }
+
+    private fun doSync() {
+        log.trace("doSync")
         val startTime = System.currentTimeMillis() / 1000
         log.info("Sync started at $startTime")
 
@@ -90,5 +107,7 @@ object Update {
 
         // Удалим ненайденные элементы
         Store.deleteOther(ids)
+
+        syncInProgress = false
     }
 }

@@ -19,6 +19,7 @@ apply plugin: 'kotlin'
 apply plugin: 'org.springframework.boot'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
     mavenCentral()

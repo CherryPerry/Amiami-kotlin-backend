@@ -1,6 +1,5 @@
 package com.cherryperry.amiami.model.mongodb
 
-import com.cherryperry.amiami.controller.UpdateController
 import com.cherryperry.amiami.model.update.UpdateItem
 import com.mongodb.MongoClient
 import org.apache.logging.log4j.LogManager
@@ -8,7 +7,7 @@ import org.mongodb.morphia.Datastore
 import org.mongodb.morphia.Morphia
 
 object Store {
-    private val log = LogManager.getLogger(UpdateController::class.java)!!
+    private val log = LogManager.getLogger(Store::class.java)!!
     private val dataStore: Datastore
 
     init {
