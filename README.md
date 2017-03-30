@@ -1,17 +1,17 @@
-#Scrapper for pre-owned section of amiami.com
+# Scrapper for pre-owned section of amiami.com
 
 This application is a web-server and scrapper for pre-owned section of [amiami.com](http://amiami.com)
 
 Spring Boot is used as main framework. Data is stored in MongoDB.
 
-##Routes
-###/v1/data
+## Routes
+### /v1/data
 Returns unsorted list of scrapped items
 
-###/v1/currency
+### /v1/currency
 Returns currencies from [fixer.io](http://fixer.io/)
 
-##Installation
+## Installation
 You need the following to run server:
 
 1. Oracle JRE 8
