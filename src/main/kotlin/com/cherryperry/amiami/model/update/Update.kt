@@ -1,6 +1,7 @@
 package com.cherryperry.amiami.model.update
 
 import com.cherryperry.amiami.model.mongodb.Store
+import com.cherryperry.amiami.model.push.Push
 import com.cherryperry.amiami.util.getString
 import okhttp3.OkHttpClient
 import org.apache.logging.log4j.LogManager
@@ -95,11 +96,14 @@ object Update {
 
         // Сохраняем элементы в бд, попутно запоманая те, которые участвовали в транзакции
         val ids = ArrayList<String>()
+        var updatedItemsCount = 0
         itemCompletableFutures.forEach {
             try {
                 val item = it.get()
                 ids.add(item.url)
-                Store.compareAndSave(item, startTime)
+                if (Store.compareAndSave(item, startTime)) {
+                    updatedItemsCount++
+                }
             } catch (e: Exception) {
                 log.error("Failed to download and parse detail page", e)
             }
@@ -107,6 +111,9 @@ object Update {
 
         // Удалим ненайденные элементы
         Store.deleteOther(ids)
+
+        // Отправим оповещение об обновлении
+        Push.sendPushWithUpdatedCount(updatedItemsCount)
 
         syncInProgress = false
     }

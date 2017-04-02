@@ -23,7 +23,7 @@ object Store {
         return dataStore.createQuery(Item::class.java).asList()
     }
 
-    fun compareAndSave(item: UpdateItem, timestamp: Long) {
+    fun compareAndSave(item: UpdateItem, timestamp: Long): Boolean {
         log.trace("compareAndSave item = $item, timestamp = $timestamp")
         val currentItem = dataStore.createQuery(Item::class.java)
                 .field("_id").equal(item.url)
@@ -32,8 +32,10 @@ object Store {
         if (newItem != currentItem) {
             log.info("Changed, save updated")
             dataStore.save(newItem)
+            return true
         } else {
             log.info("No changes")
+            return false
         }
     }
 
