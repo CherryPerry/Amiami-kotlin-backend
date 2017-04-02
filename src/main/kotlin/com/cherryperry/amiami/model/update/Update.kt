@@ -113,7 +113,9 @@ object Update {
         Store.deleteOther(ids)
 
         // Отправим оповещение об обновлении
-        Push.sendPushWithUpdatedCount(updatedItemsCount)
+        if (updatedItemsCount > 0) {
+            Push.sendPushWithUpdatedCount(updatedItemsCount)
+        }
 
         syncInProgress = false
     }
