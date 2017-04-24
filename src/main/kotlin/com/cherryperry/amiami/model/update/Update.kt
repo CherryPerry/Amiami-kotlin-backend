@@ -14,8 +14,8 @@ import java.util.function.Supplier
 
 object Update {
     private val log = LogManager.getLogger(Update::class.java)!!
-    private val pages = 30
-    private val perPage = 100
+    private val pages = 60
+    private val perPage = 40
     private val threadPool = Executors.newFixedThreadPool(8)
     private val baseUrl = "http://slist.amiami.com"
     private val okHttp: OkHttpClient = OkHttpClient.Builder()
