@@ -30,8 +30,13 @@ object Store {
                 .get()
         val newItem = mapUpdateItemToDatabaseItem(item, timestamp)
         if (newItem != currentItem) {
-            log.info("Changed, save updated")
+            if (currentItem != null) {
+                log.info("Changed, old one = $currentItem")
+            } else {
+                log.info("Do not exist")
+            }
             dataStore.save(newItem)
+            log.info("Saved new one")
             return true
         } else {
             log.info("No changes")
