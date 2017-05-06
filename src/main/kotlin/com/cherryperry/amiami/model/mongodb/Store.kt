@@ -26,7 +26,7 @@ object Store {
     fun compareAndSave(item: UpdateItem, timestamp: Long): Boolean {
         log.trace("compareAndSave item = $item, timestamp = $timestamp")
         val currentItem = dataStore.createQuery(Item::class.java)
-                .field("_id").equal(item.url)
+                .field("url").equal(item.url)
                 .get()
         val newItem = mapUpdateItemToDatabaseItem(item, timestamp)
         if (newItem != currentItem) {
@@ -46,13 +46,8 @@ object Store {
         log.info("Deleted = ${result.n}")
     }
 
-    private fun insertOrUpdate(item: UpdateItem, timestamp: Long) {
-        dataStore.save(mapUpdateItemToDatabaseItem(item, timestamp))
-    }
-
     private fun mapUpdateItemToDatabaseItem(item: UpdateItem, timestamp: Long = 0): Item {
         val dbItem = Item()
-        dbItem._id = item.url
         dbItem.url = item.url
         dbItem.discount = item.discount
         dbItem.name = item.name
