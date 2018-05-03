@@ -38,7 +38,7 @@ object Push {
         if (response.isSuccessful) {
             log.info("Push notification was sent")
         } else {
-            log.error("Failed to send push notification (${response.code()} - ${response.body().string()}")
+            log.error("Failed to send push notification (${response.code()} - ${response.body()!!.string()}")
         }
     }
 }

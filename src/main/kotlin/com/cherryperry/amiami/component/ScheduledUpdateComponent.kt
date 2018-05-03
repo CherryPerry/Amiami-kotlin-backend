@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-@Suppress("unused")
 @Component
 class ScheduledUpdateComponent {
 

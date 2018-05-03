@@ -7,13 +7,12 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
-@Suppress("unused")
 @RestController
 class DataController {
 
     private val log = LogManager.getLogger(DataController::class.java)!!
 
-    @RequestMapping(value = "/v1/data", produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @RequestMapping(value = ["/v1/data"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun data(): Collection<Item> {
         log.trace("data")
         return Store.items()
