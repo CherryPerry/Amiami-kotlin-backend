@@ -1,9 +1,9 @@
-group 'com.cherryperry'
-version '1.0'
-
 buildscript {
     ext.kotlin_version = '1.2.41'
-    ext.spring_boot_version = '2.0.1.RELEASE'
+    ext.spring_boot_version = '2.0.2.RELEASE'
+    ext.retrofit_version = '2.4.0'
+    ext.log4j_version = '2.11.0'
+    ext.okhttp_version = '3.10.0'
 
     repositories {
         jcenter()
@@ -17,7 +17,15 @@ buildscript {
     }
 }
 
-apply plugin: 'java'
+plugins {
+    id "io.gitlab.arturbosch.detekt" version '1.0.0.RC7'
+    id "com.github.ben-manes.versions" version '0.17.0'
+    id 'org.jmailen.kotlinter' version '1.12.0'
+}
+
+group 'com.cherryperry'
+version '1.1'
+
 apply plugin: 'kotlin'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.ben-manes.versions'
@@ -30,26 +38,50 @@ repositories {
     mavenCentral()
 }
 
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
+compileKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+configurations {
+    // для использования log4j2
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
+
+detekt {
+    defaultProfile {
+        config = file('detekt-config.yml')
+    }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile ("org.springframework.boot:spring-boot-starter-web:$spring_boot_version") {
-        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-    }
-    compile "org.springframework.boot:spring-boot-starter-log4j2:$spring_boot_version"
-    compile 'org.apache.logging.log4j:log4j-api:2.11.0'
-    compile 'org.apache.logging.log4j:log4j-core:2.11.0'
-    compile 'org.mongodb.morphia:morphia:1.3.2'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
-    compile 'org.jsoup:jsoup:1.11.3'
-    compile 'com.google.code.gson:gson:2.8.4'
-    compile 'com.squareup.retrofit2:retrofit:2.4.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.4.0'
-    compile 'com.squareup.retrofit2:adapter-java8:2.4.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.springframework.boot:spring-boot-starter:$spring_boot_version"
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:$spring_boot_version"
+    implementation "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
+    implementation "org.springframework.boot:spring-boot-starter-data-mongodb:$spring_boot_version"
+
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
+    implementation 'org.jsoup:jsoup:1.11.3'
+
+    implementation 'com.google.code.gson:gson:2.8.4'
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-java8:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.13'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
+    testImplementation "org.springframework.boot:spring-boot-starter-test:$spring_boot_version"
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.3'
 }

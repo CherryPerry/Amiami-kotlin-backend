@@ -7,7 +7,6 @@ import java.util.concurrent.CompletableFuture
 interface CurrencyAPI {
 
     companion object {
-
         const val BASE_URL = "http://data.fixer.io/api/"
     }
 

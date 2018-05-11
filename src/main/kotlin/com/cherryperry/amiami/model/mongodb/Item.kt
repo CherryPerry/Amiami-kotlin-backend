@@ -1,26 +1,26 @@
 package com.cherryperry.amiami.model.mongodb
 
-import org.mongodb.morphia.annotations.Entity
-import org.mongodb.morphia.annotations.Id
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity("items")
-class Item {
-    @Id
-    var url: String? = null
-    var name: String? = null
-    var image: String? = null
-    var price: String? = null
-    var discount: String? = null
-    var time: Long? = null
+@Document(collection = "items")
+data class Item(
+        @Id val url: String,
+        val name: String,
+        val image: String,
+        val price: String,
+        val discount: String,
+        val time: Long
+) {
 
-    override fun equals(other: Any?): Boolean {
+    fun equalsNoTimestamp(other: Any?): Boolean {
         if (other == null || other !is Item) {
             return false
         }
-        return other.url.equals(url)
-                && other.name.equals(name)
-                && other.image.equals(image)
-                && other.price.equals(price)
-                && other.discount.equals(discount)
+        return other.url == url
+                && other.name == name
+                && other.image == image
+                && other.price == price
+                && other.discount == discount
     }
 }

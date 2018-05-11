@@ -13,7 +13,7 @@ class CurrencyController @Autowired constructor(
         private val currencyRepository: CurrencyRepository
 ) {
 
-    private val log = LogManager.getLogger(CurrencyController::class.java)!!
+    private val log = LogManager.getLogger(CurrencyController::class.java)
 
     @RequestMapping(value = ["/v1/currency"], produces = [MediaType.APPLICATION_JSON_VALUE])
     fun currencies(): CurrencyResponse {

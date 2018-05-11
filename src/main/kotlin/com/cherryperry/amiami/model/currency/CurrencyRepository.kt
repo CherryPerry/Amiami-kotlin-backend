@@ -2,14 +2,17 @@ package com.cherryperry.amiami.model.currency
 
 import com.cherryperry.amiami.App
 import org.apache.logging.log4j.LogManager
+import org.springframework.stereotype.Repository
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
-class CurrencyRepository {
+@Repository
+open class CurrencyRepository {
 
     companion object {
         private const val CURRENCY_JPY = "JPY"
@@ -19,19 +22,17 @@ class CurrencyRepository {
         private val INTERNAL_ERROR_RESPONSE = CurrencyResponse(success = false, error = CurrencyErrorResponse(0, "Internal error"))
     }
 
-    private val log = LogManager.getLogger(CurrencyRepository::class.java)!!
+    private val log = LogManager.getLogger(CurrencyRepository::class.java)
     private val api: CurrencyAPI
     private val accessKey: String
-
-    @Volatile
-    private var cached: CurrencyResponse? = null
+    private val cachedResult = AtomicReference<CurrencyResponse?>()
     private val semaphore = Semaphore(1)
 
     init {
         accessKey = App::class.java.classLoader.getResourceAsStream(PROPERTIES_FILE).use {
-            val prop = Properties()
-            prop.load(it)
-            prop.getProperty(PROPERTIES_KEY, "no_key")
+            val properties = Properties()
+            properties.load(it)
+            properties.getProperty(PROPERTIES_KEY, "no_key")
         }
         val retrofit = Retrofit.Builder()
                 .baseUrl(CurrencyAPI.BASE_URL)
@@ -42,11 +43,11 @@ class CurrencyRepository {
         api = retrofit.create(CurrencyAPI::class.java)
     }
 
-    fun get(): CurrencyResponse {
+    open fun get(): CurrencyResponse {
         log.trace("get")
         try {
             semaphore.acquire()
-            val cached = cached
+            val cached = cachedResult.get()
             if (cached != null
                     && cached.success
                     && cached.timestamp != null
@@ -68,7 +69,7 @@ class CurrencyRepository {
                 val newResult = CurrencyResponse(success = true, timestamp = result.timestamp, date = result.date,
                         base = CURRENCY_JPY, rates = newRates)
                 log.info("calculated response $newResult")
-                this.cached = newResult
+                this.cachedResult.set(newResult)
                 return newResult
             } else {
                 log.info("currency api returns error $result")
@@ -76,6 +77,7 @@ class CurrencyRepository {
             }
         } catch (exception: Exception) {
             log.error("currency api throws exception", exception)
+            val cached = cachedResult.get()
             return cached ?: INTERNAL_ERROR_RESPONSE
         } finally {
             semaphore.release()
