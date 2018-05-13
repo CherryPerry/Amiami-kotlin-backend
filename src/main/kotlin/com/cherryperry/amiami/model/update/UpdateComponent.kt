@@ -114,16 +114,18 @@ open class UpdateComponent @Autowired constructor(
                                 } else {
                                     // на одной странице нескольколько продуктов, нужна информация по каждому
                                     Flowable.fromIterable(list)
-                                            .flatMapSingle { listItem -> api.htmlPage(listItem.url) }
-                                            .map { html ->
-                                                HtmlParser(html).parseItem(listItem) ?: HtmlParser.Item.NULL
+                                            .flatMapSingle { listItem ->
+                                                api.htmlPage(listItem.url)
+                                                        .map { html ->
+                                                            HtmlParser(html).parseItem(listItem) ?: HtmlParser.Item.NULL
+                                                        }
                                             }
-                                            .filter { it != HtmlParser.Item.NULL }
                                             .toList()
                                 }
                             }
                 }
                 .flatMap { Flowable.fromIterable(it) }
+                .filter { it != HtmlParser.Item.NULL }
                 .toList()
                 .blockingGet()
 
