@@ -1,5 +1,7 @@
 # Scrapper for pre-owned section of amiami.com
 
+[![Build Status](https://travis-ci.org/CherryPerry/Amiami-kotlin-backend.svg?branch=master)](https://travis-ci.org/CherryPerry/Amiami-kotlin-backend)
+
 This application is a web-server and scrapper for pre-owned section of [amiami.com](http://amiami.com)
 
 Spring Boot is used as main framework. Data is stored in MongoDB.
