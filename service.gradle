@@ -3,6 +3,7 @@ import org.gradle.internal.os.OperatingSystem
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.PosixFilePermission
 
 task startService {
@@ -55,17 +56,17 @@ RestartSec=3
 [Install]
 WantedBy=multi-user.target
 """
-            def jarPath = Paths.get(jar)
+            def jarPath = Paths.get(jar.toString())
             def permissions = Files.getPosixFilePermissions(jarPath)
             permissions.add(PosixFilePermission.OWNER_EXECUTE)
             permissions.add(PosixFilePermission.GROUP_EXECUTE)
             permissions.add(PosixFilePermission.OTHERS_EXECUTE)
             Files.setPosixFilePermissions(jarPath, permissions)
             Files.createDirectories(Paths.get(installPath))
-            Files.copy(jarPath, Paths.get(targetExecutable))
+            Files.copy(jarPath, Paths.get(targetExecutable), StandardCopyOption.REPLACE_EXISTING)
             Files.write(Paths.get('/etc/systemd/system/amiami.service'), systemd.getBytes(StandardCharsets.UTF_8))
             exec { commandLine 'systemctl', 'daemon-reload' }
-            exec { commandLine 'systemctl', 'enable amiami.service' }
+            exec { commandLine 'systemctl', 'enable', 'amiami.service' }
             exec { commandLine 'systemctl', 'restart', 'amiami.service' }
         } else {
             println 'Unsupported OS'
