@@ -76,8 +76,8 @@ open class UpdateComponent @Autowired constructor(
 
         val list = Flowable.fromIterable(arrayListOf(
                 // парсим две категории
-                "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
-                //"$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
+                "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt=",
+                "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
                 .map { urlTemplate -> { page: Int -> urlTemplate + page } }
                 .flatMap { urlGenerator ->
                     // загружаем первую страницу категории
