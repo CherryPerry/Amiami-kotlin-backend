@@ -19,7 +19,7 @@ task stopService {
 
     doLast {
         if (OperatingSystem.current().isLinux()) {
-            exec { stopService.commandLine 'systemctl', 'stop', 'amiami.service' }
+            exec { commandLine 'systemctl', 'stop', 'amiami.service' }
         } else {
             logger.warn 'Unsupported OS'
         }
@@ -36,7 +36,7 @@ task installService {
     doLast {
         if (OperatingSystem.current().isLinux()) {
             def installPath = '/var/amiami'
-            def targetExecutable = install + '/app.jar'
+            def targetExecutable = installPath + '/app.jar'
             def jar = tasks.findByName('bootJar').archivePath
             def systemd = """[Unit]
 Description=Amiami pre-owned web scrapper
@@ -50,15 +50,13 @@ RestartSec=3
 [Install]
 WantedBy=multi-user.target
 """
-            exec {
-                commandLine 'chmod', '+x', jar
-                commandLine 'mkdir', installPath
-                commandLine 'cp', jar, targetExecutable
-                commandLine 'echo', "'$systemd'", '>>', '/etc/systemd/system/amiami.service'
-                commandLine 'systemctl', 'enable amiami.service'
-                commandLine 'systemctl', 'daemon-reload'
-                commandLine 'systemctl', 'restart', 'amiami.service'
-            }
+            exec { commandLine 'chmod', '+x', jar }
+            exec { commandLine 'mkdir', installPath }
+            exec { commandLine 'cp', jar, targetExecutable }
+            exec { commandLine 'echo', "'$systemd'", '>', '/etc/systemd/system/amiami.service' }
+            exec { commandLine 'systemctl', 'enable amiami.service' }
+            exec { commandLine 'systemctl', 'daemon-reload' }
+            exec { commandLine 'systemctl', 'restart', 'amiami.service' }
         } else {
             println 'Unsupported OS'
         }
