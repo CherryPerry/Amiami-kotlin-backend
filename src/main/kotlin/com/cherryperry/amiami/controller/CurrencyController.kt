@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CurrencyController @Autowired constructor(
-        private val currencyRepository: CurrencyRepository
+    private val currencyRepository: CurrencyRepository
 ) {
 
     private val log = LogManager.getLogger(CurrencyController::class.java)

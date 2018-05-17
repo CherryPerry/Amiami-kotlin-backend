@@ -1,8 +1,4 @@
 buildscript {
-    ext.retrofit_version = '2.4.0'
-    ext.log4j_version = '2.11.0'
-    ext.okhttp_version = '3.10.0'
-
     repositories {
         jcenter()
         mavenCentral()
@@ -12,9 +8,9 @@ buildscript {
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.2.41'
     id 'org.springframework.boot' version '2.0.2.RELEASE'
-    id "com.github.ben-manes.versions" version '0.17.0'
-    id "io.gitlab.arturbosch.detekt" version '1.0.0.RC7'
-    // id 'org.jmailen.kotlinter' version '1.12.0'
+    id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC7'
+    id 'org.jmailen.kotlinter' version '1.12.0'
 }
 
 group 'com.cherryperry'
@@ -58,6 +54,9 @@ bootJar {
 }
 
 dependencies {
+    def retrofit_version = '2.4.0'
+    def okhttp_version = '3.10.0'
+
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 

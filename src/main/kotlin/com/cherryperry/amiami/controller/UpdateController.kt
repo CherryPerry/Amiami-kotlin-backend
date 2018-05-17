@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UpdateController @Autowired constructor(
-        private val updateComponent: com.cherryperry.amiami.model.update.UpdateComponent
+    private val updateComponent: com.cherryperry.amiami.model.update.UpdateComponent
 ) {
 
     private val log = LogManager.getLogger(UpdateController::class.java)

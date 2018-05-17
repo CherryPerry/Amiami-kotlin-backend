@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 @Component
 open class UpdateComponent @Autowired constructor(
-        private val itemRepository: ItemRepository,
-        private val pushService: PushService
+    private val itemRepository: ItemRepository,
+    private val pushService: PushService
 ) {
 
     companion object {
@@ -36,17 +36,17 @@ open class UpdateComponent @Autowired constructor(
     init {
         val scheduler = Schedulers.from(Executors.newScheduledThreadPool(8))
         val okHttpClient = OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .build()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .build()
         val retrofit = Retrofit.Builder()
-                .baseUrl("http://127.0.0.1")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(scheduler))
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .validateEagerly(true)
-                .client(okHttpClient)
-                .build()
+            .baseUrl("http://127.0.0.1")
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(scheduler))
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .validateEagerly(true)
+            .client(okHttpClient)
+            .build()
         api = retrofit.create(AmiamiHtmlAPI::class.java)
     }
 
@@ -75,59 +75,59 @@ open class UpdateComponent @Autowired constructor(
         log.info("Sync started at $startTime")
 
         val list = Flowable.fromIterable(arrayListOf(
-                // парсим две категории
-                "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt=",
-                "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
-                .map { urlTemplate -> { page: Int -> urlTemplate + page } }
-                .flatMap { urlGenerator ->
-                    // загружаем первую страницу категории
-                    api.htmlPage(urlGenerator(1))
-                            .toFlowable()
-                            .flatMap { html ->
-                                val parser = HtmlParser(html)
-                                // определяем сколько страниц всего
-                                val pageCount = parser.parsePageCount()
-                                Flowable.range(1, pageCount)
-                                        .flatMapSingle { page ->
-                                            if (page == 0) {
-                                                // результат первой страницы уже есть
-                                                Single.just(parser.parseList())
-                                            } else {
-                                                // остальные страницы придется загрузить
-                                                api.htmlPage(urlGenerator(page))
-                                                        .map { html -> HtmlParser(html).parseList() }
-                                            }
-                                        }
-                            }
-                }
-                .flatMap { Flowable.fromIterable(it) }
-                .flatMapSingle { listItem ->
-                    // для каждого элемента списка нужно загрузить свою страницу
-                    api.htmlPage(listItem.url)
-                            .flatMap {
-                                val parser = HtmlParser(it)
-                                // возможно в этой одной ссылке несколько продуктов
-                                val list = parser.parseItemForOtherItems(listItem)
-                                if (list.isEmpty()) {
-                                    // если других продуктов нет, то сразу парсим в результат
-                                    Single.just(listOf(parser.parseItem(listItem) ?: HtmlParser.Item.NULL))
+            // парсим две категории
+            "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt=",
+            "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
+            .map { urlTemplate -> { page: Int -> urlTemplate + page } }
+            .flatMap { urlGenerator ->
+                // загружаем первую страницу категории
+                api.htmlPage(urlGenerator(1))
+                    .toFlowable()
+                    .flatMap { html ->
+                        val parser = HtmlParser(html)
+                        // определяем сколько страниц всего
+                        val pageCount = parser.parsePageCount()
+                        Flowable.range(1, pageCount)
+                            .flatMapSingle { page ->
+                                if (page == 0) {
+                                    // результат первой страницы уже есть
+                                    Single.just(parser.parseList())
                                 } else {
-                                    // на одной странице нескольколько продуктов, нужна информация по каждому
-                                    Flowable.fromIterable(list)
-                                            .flatMapSingle { listItem ->
-                                                api.htmlPage(listItem.url)
-                                                        .map { html ->
-                                                            HtmlParser(html).parseItem(listItem) ?: HtmlParser.Item.NULL
-                                                        }
-                                            }
-                                            .toList()
+                                    // остальные страницы придется загрузить
+                                    api.htmlPage(urlGenerator(page))
+                                        .map { html -> HtmlParser(html).parseList() }
                                 }
                             }
-                }
-                .flatMap { Flowable.fromIterable(it) }
-                .filter { it != HtmlParser.Item.NULL }
-                .toList()
-                .blockingGet()
+                    }
+            }
+            .flatMap { Flowable.fromIterable(it) }
+            .flatMapSingle { listItem ->
+                // для каждого элемента списка нужно загрузить свою страницу
+                api.htmlPage(listItem.url)
+                    .flatMap {
+                        val parser = HtmlParser(it)
+                        // возможно в этой одной ссылке несколько продуктов
+                        val list = parser.parseItemForOtherItems(listItem)
+                        if (list.isEmpty()) {
+                            // если других продуктов нет, то сразу парсим в результат
+                            Single.just(listOf(parser.parseItem(listItem) ?: HtmlParser.Item.NULL))
+                        } else {
+                            // на одной странице нескольколько продуктов, нужна информация по каждому
+                            Flowable.fromIterable(list)
+                                .flatMapSingle { listItem ->
+                                    api.htmlPage(listItem.url)
+                                        .map { html ->
+                                            HtmlParser(html).parseItem(listItem) ?: HtmlParser.Item.NULL
+                                        }
+                                }
+                                .toList()
+                        }
+                    }
+            }
+            .flatMap { Flowable.fromIterable(it) }
+            .filter { it != HtmlParser.Item.NULL }
+            .toList()
+            .blockingGet()
 
         // Сохраняем элементы в бд, попутно запоманая те, которые участвовали в транзакции
         val ids = ArrayList<String>()

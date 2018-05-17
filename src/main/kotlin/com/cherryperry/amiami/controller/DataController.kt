@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class DataController @Autowired constructor(
-        private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository
 ) {
 
     private val log = LogManager.getLogger(DataController::class.java)

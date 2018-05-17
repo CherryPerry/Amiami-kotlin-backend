@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 open class ItemRepository @Autowired constructor(
-        private val itemMongoRepository: ItemMongoRepository
+    private val itemMongoRepository: ItemMongoRepository
 ) {
 
     private val log = LogManager.getLogger(ItemRepository::class.java)

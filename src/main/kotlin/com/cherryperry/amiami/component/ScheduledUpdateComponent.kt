@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class ScheduledUpdateComponent @Autowired constructor(
-        private val updateComponent: UpdateComponent
+    private val updateComponent: UpdateComponent
 ) {
 
     private val log = LogManager.getLogger(ScheduledUpdateComponent::class.java)

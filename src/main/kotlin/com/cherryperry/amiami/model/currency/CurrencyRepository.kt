@@ -1,12 +1,11 @@
 package com.cherryperry.amiami.model.currency
 
-import com.cherryperry.amiami.App
+import com.cherryperry.amiami.util.readProperty
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Repository
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -23,23 +22,20 @@ open class CurrencyRepository {
     }
 
     private val log = LogManager.getLogger(CurrencyRepository::class.java)
-    private val api: CurrencyAPI
-    private val accessKey: String
+    private val accessKey: String = readProperty(PROPERTIES_FILE) {
+        getProperty(PROPERTIES_KEY, "no_key")
+    }
     private val cachedResult = AtomicReference<CurrencyResponse?>()
     private val semaphore = Semaphore(1)
+    private val api: CurrencyAPI
 
     init {
-        accessKey = App::class.java.classLoader.getResourceAsStream(PROPERTIES_FILE).use {
-            val properties = Properties()
-            properties.load(it)
-            properties.getProperty(PROPERTIES_KEY, "no_key")
-        }
         val retrofit = Retrofit.Builder()
-                .baseUrl(CurrencyAPI.BASE_URL)
-                .addCallAdapterFactory(Java8CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .validateEagerly(true)
-                .build()
+            .baseUrl(CurrencyAPI.BASE_URL)
+            .addCallAdapterFactory(Java8CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .validateEagerly(true)
+            .build()
         api = retrofit.create(CurrencyAPI::class.java)
     }
 
@@ -48,10 +44,10 @@ open class CurrencyRepository {
         try {
             semaphore.acquire()
             val cached = cachedResult.get()
-            if (cached != null
-                    && cached.success
-                    && cached.timestamp != null
-                    && System.currentTimeMillis() - cached.timestamp * 1000 < TimeUnit.DAYS.toMillis(1)) {
+            if (cached != null &&
+                cached.success &&
+                cached.timestamp != null &&
+                System.currentTimeMillis() - cached.timestamp * 1000 < TimeUnit.DAYS.toMillis(1)) {
                 log.info("cache is valid")
                 semaphore.release()
                 return cached
@@ -67,7 +63,7 @@ open class CurrencyRepository {
                 val jpyRate = result.rates[CURRENCY_JPY]!!
                 val newRates = result.rates.mapValues { it.value / jpyRate }
                 val newResult = CurrencyResponse(success = true, timestamp = result.timestamp, date = result.date,
-                        base = CURRENCY_JPY, rates = newRates)
+                    base = CURRENCY_JPY, rates = newRates)
                 log.info("calculated response $newResult")
                 this.cachedResult.set(newResult)
                 return newResult

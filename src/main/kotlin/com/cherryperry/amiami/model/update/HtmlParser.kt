@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 
 class HtmlParser(
-        html: String
+    html: String
 ) {
 
     private val log = LogManager.getLogger(HtmlParser::class.java)
@@ -42,11 +42,11 @@ class HtmlParser(
     fun parseItemForOtherItems(item: ListItem): List<ListItem> {
         return try {
             doc.select(".icon_preowned")
-                    .mapNotNull {
-                        val td = it.parent().parent()
-                        val url = td.parent().attr("data-href")
-                        item.copy(url = url)
-                    }
+                .mapNotNull {
+                    val td = it.parent().parent()
+                    val url = td.parent().attr("data-href")
+                    item.copy(url = url)
+                }
         } catch (exception: Exception) {
             log.error("Fail while parsing item $item", exception)
             emptyList()
@@ -67,18 +67,18 @@ class HtmlParser(
     }
 
     data class ListItem(
-            val url: String,
-            val image: String,
-            val price: String,
-            val discount: String
+        val url: String,
+        val image: String,
+        val price: String,
+        val discount: String
     )
 
     data class Item(
-            val url: String,
-            val name: String,
-            val image: String,
-            val price: String,
-            val discount: String
+        val url: String,
+        val name: String,
+        val image: String,
+        val price: String,
+        val discount: String
     ) {
         companion object {
             val NULL = Item("html://localhost", "NULL", "html://localhost", "", "")
