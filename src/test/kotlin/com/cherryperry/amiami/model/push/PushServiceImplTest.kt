@@ -12,15 +12,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 
 @RunWith(SpringJUnit4ClassRunner::class)
-class PushServiceTest {
+class PushServiceImplTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var pushService: PushService
+    private lateinit var pushService: PushServiceImpl
 
     @Before
     fun before() {
         server = MockWebServer()
-        pushService = PushService(server.url("/").toString())
+        pushService = PushServiceImpl(server.url("/").toString())
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.cherryperry.amiami.model.mongodb.Item
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 import com.cherryperry.amiami.model.push.PushService
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
 import org.apache.logging.log4j.LogManager
@@ -74,58 +73,14 @@ open class UpdateComponent @Autowired constructor(
         val startTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
         log.info("Sync started at $startTime")
 
+        // Загружаем а парсим информацию об элементах
+        val crawler = ItemCrawler(api)
         val list = Flowable.fromIterable(arrayListOf(
             // парсим две категории
             "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt=",
             "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
-            .map { urlTemplate -> { page: Int -> urlTemplate + page } }
-            .flatMap { urlGenerator ->
-                // загружаем первую страницу категории
-                api.htmlPage(urlGenerator(1))
-                    .toFlowable()
-                    .flatMap { html ->
-                        val parser = HtmlParser(html)
-                        // определяем сколько страниц всего
-                        val pageCount = parser.parsePageCount()
-                        Flowable.range(1, pageCount)
-                            .flatMapSingle { page ->
-                                if (page == 0) {
-                                    // результат первой страницы уже есть
-                                    Single.just(parser.parseList())
-                                } else {
-                                    // остальные страницы придется загрузить
-                                    api.htmlPage(urlGenerator(page))
-                                        .map { html -> HtmlParser(html).parseList() }
-                                }
-                            }
-                    }
-            }
-            .flatMap { Flowable.fromIterable(it) }
-            .flatMapSingle { listItem ->
-                // для каждого элемента списка нужно загрузить свою страницу
-                api.htmlPage(listItem.url)
-                    .flatMap {
-                        val parser = HtmlParser(it)
-                        // возможно в этой одной ссылке несколько продуктов
-                        val list = parser.parseItemForOtherItems(listItem)
-                        if (list.isEmpty()) {
-                            // если других продуктов нет, то сразу парсим в результат
-                            Single.just(listOf(parser.parseItem(listItem) ?: HtmlParser.Item.NULL))
-                        } else {
-                            // на одной странице нескольколько продуктов, нужна информация по каждому
-                            Flowable.fromIterable(list)
-                                .flatMapSingle { listItem ->
-                                    api.htmlPage(listItem.url)
-                                        .map { html ->
-                                            HtmlParser(html).parseItem(listItem) ?: HtmlParser.Item.NULL
-                                        }
-                                }
-                                .toList()
-                        }
-                    }
-            }
-            .flatMap { Flowable.fromIterable(it) }
-            .filter { it != HtmlParser.Item.NULL }
+            .flatMap { crawler.crawlLists(it) }
+            .flatMap { crawler.crawlItem(it) }
             .toList()
             .blockingGet()
 

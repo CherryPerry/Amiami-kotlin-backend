@@ -17,10 +17,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [Configuration::class])
 @DataMongoTest
-class ItemRepositoryTest {
+class ItemRepositoryImplTest {
 
     @Autowired
-    lateinit var itemRepository: ItemRepository
+    lateinit var itemRepository: ItemRepositoryImpl
 
     @Autowired
     lateinit var mongoOperations: MongoOperations

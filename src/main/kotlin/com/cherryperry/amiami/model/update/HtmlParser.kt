@@ -13,7 +13,7 @@ class HtmlParser(
     fun parsePageCount(): Int {
         val nav = doc.selectFirst(".result_pagenavi")
         val elements = nav?.children()
-        if (elements != null && elements.size > 2) {
+        if (elements != null && elements.size >= 2) {
             val count = elements[elements.size - 2].text().replace(Regex("[\\[\\]]"), "").toIntOrNull()
             return count ?: 0
         }
