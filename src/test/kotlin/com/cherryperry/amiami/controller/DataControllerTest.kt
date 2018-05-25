@@ -40,7 +40,6 @@ class DataControllerTest {
 
     @Test
     fun testNotModifiedHeader() {
-        itemRepository.lastModified()
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/data")
             .header(HttpHeaders.IF_MODIFIED_SINCE, lastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isNotModified)
