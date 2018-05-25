@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Repository
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -33,7 +33,7 @@ open class CurrencyRepository {
         val retrofit = Retrofit.Builder()
             .baseUrl(CurrencyAPI.BASE_URL)
             .addCallAdapterFactory(Java8CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create())
             .validateEagerly(true)
             .build()
         api = retrofit.create(CurrencyAPI::class.java)

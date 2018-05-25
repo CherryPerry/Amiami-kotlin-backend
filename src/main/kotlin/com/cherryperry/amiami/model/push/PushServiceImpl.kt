@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import retrofit2.Retrofit
 import retrofit2.adapter.java8.Java8CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
 
 @Service
 open class PushServiceImpl constructor(
@@ -28,7 +28,7 @@ open class PushServiceImpl constructor(
         val retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
             .addCallAdapterFactory(Java8CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create())
             .validateEagerly(true)
             .build()
         api = retrofit.create(PushAPI::class.java)
