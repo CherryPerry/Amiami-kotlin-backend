@@ -1,10 +1,10 @@
 package com.cherryperry.amiami.model.mongodb
 
-interface ItemRepository {
+import com.cherryperry.amiami.model.lastmodified.LastModifiedSupported
+
+interface ItemRepository : LastModifiedSupported {
 
     fun items(): Collection<Item>
-
-    fun lastModified(): Long
 
     fun compareAndSave(item: Item): Boolean
 

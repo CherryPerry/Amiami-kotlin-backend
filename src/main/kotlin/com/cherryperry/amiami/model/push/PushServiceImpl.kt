@@ -8,7 +8,7 @@ import retrofit2.adapter.java8.Java8CallAdapterFactory
 import retrofit2.converter.jackson.JacksonConverterFactory
 
 @Service
-open class PushServiceImpl constructor(
+class PushServiceImpl constructor(
     baseUrl: String = PushAPI.BASE_URL
 ) : PushService {
 

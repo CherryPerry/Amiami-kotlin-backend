@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Component
-open class UpdateComponent @Autowired constructor(
+class UpdateComponent @Autowired constructor(
     private val itemRepository: ItemRepository,
     private val pushService: PushService
 ) {
@@ -49,7 +49,7 @@ open class UpdateComponent @Autowired constructor(
         api = retrofit.create(AmiamiHtmlAPI::class.java)
     }
 
-    open fun sync() {
+    fun sync() {
         log.trace("sync")
         synchronized(syncInProgress) {
             val sync = syncInProgress.get()

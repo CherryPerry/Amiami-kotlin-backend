@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EnableMongoRepositories
-open class MongoConfiguration : AbstractMongoConfiguration() {
+class MongoConfiguration : AbstractMongoConfiguration() {
 
     @Bean
     override fun mongoClient(): MongoClient = MongoClient()

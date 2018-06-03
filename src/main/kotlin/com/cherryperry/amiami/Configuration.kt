@@ -1,6 +1,7 @@
 package com.cherryperry.amiami
 
 import com.cherryperry.amiami.model.currency.CurrencyRepository
+import com.cherryperry.amiami.model.currency.CurrencyRepositoryImpl
 import com.cherryperry.amiami.model.mongodb.ItemMongoRepository
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 import com.cherryperry.amiami.model.mongodb.ItemRepositoryImpl
@@ -14,19 +15,19 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EnableAutoConfiguration
-open class Configuration {
+class Configuration {
 
     @Bean
-    open fun currencyRepository(): CurrencyRepository = CurrencyRepository()
+    fun currencyRepository(): CurrencyRepository = CurrencyRepositoryImpl()
 
     @Bean
-    open fun pushService(): PushService = PushServiceImpl()
+    fun pushService(): PushService = PushServiceImpl()
 
     @Bean
-    open fun itemRepository(@Autowired itemMongoRepository: ItemMongoRepository): ItemRepository =
+    fun itemRepository(@Autowired itemMongoRepository: ItemMongoRepository): ItemRepository =
         ItemRepositoryImpl(itemMongoRepository)
 
     @Bean
-    open fun updateComponent(@Autowired itemRepository: ItemRepositoryImpl, @Autowired pushService: PushServiceImpl): UpdateComponent =
+    fun updateComponent(@Autowired itemRepository: ItemRepositoryImpl, @Autowired pushService: PushServiceImpl): UpdateComponent =
         UpdateComponent(itemRepository, pushService)
 }

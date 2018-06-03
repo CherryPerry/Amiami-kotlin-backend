@@ -16,12 +16,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @RunWith(SpringJUnit4ClassRunner::class)
-class DataControllerTest {
+class CurrencyControllerTest {
 
-    private val itemRepository = DataControllerItemRepositoryTestImpl()
+    private val itemRepository = CurrencyControllerCurrencyRepositoryTestImpl()
 
     private val mockMvc: MockMvc = MockMvcBuilders
-        .standaloneSetup(DataController(itemRepository))
+        .standaloneSetup(CurrencyController(itemRepository))
         .alwaysDo<StandaloneMockMvcBuilder>(MockMvcResultHandlers.print())
         .build()
 
@@ -31,16 +31,16 @@ class DataControllerTest {
 
     @Test
     fun testDefaultResponse() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/v1/data"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency"))
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LAST_MODIFIED, lastModifiedString))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(MockMvcResultMatchers.content().string("[{\"url\":\"1\",\"name\":\"2\",\"image\":\"3\",\"price\":\"4\",\"discount\":\"5\",\"time\":6},{\"url\":\"7\",\"name\":\"8\",\"image\":\"9\",\"price\":\"1\",\"discount\":\"2\",\"time\":3}]"))
+            .andExpect(MockMvcResultMatchers.content().string("{\"success\":true,\"rates\":{\"USD\":1.0,\"EUR\":1.0}}"))
     }
 
     @Test
     fun testNotModifiedHeader() {
-        mockMvc.perform(MockMvcRequestBuilders.get("/v1/data")
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency")
             .header(HttpHeaders.IF_MODIFIED_SINCE, lastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isNotModified)
     }
