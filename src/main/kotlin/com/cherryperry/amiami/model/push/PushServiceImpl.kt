@@ -36,7 +36,16 @@ class PushServiceImpl constructor(
 
     override fun sendPushWithUpdatedCount(count: Int) {
         try {
-            api.sendPushMessage(accessKey, PushRequest(PUSH_DATA_TO, PushCountPayload(count))).get()
+            api.sendPushMessage("key=$accessKey", PushRequest(PUSH_DATA_TO, PushCountPayload(count))).get()
+            log.info("Push notification was sent")
+        } catch (exception: Exception) {
+            log.error("Failed to send push notification", exception.cause)
+        }
+    }
+
+    override fun sendPushWithUpdateCountToDevice(count: Int, token: String) {
+        try {
+            api.sendPushMessage("key=$accessKey", PushRequest(token, PushCountPayload(count))).get()
             log.info("Push notification was sent")
         } catch (exception: Exception) {
             log.error("Failed to send push notification", exception.cause)

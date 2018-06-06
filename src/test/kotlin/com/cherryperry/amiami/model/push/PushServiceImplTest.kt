@@ -4,7 +4,7 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,7 +29,7 @@ class PushServiceImplTest {
         pushService.sendPushWithUpdatedCount(1)
         val request = server.takeRequest()
         assertEquals("/fcm/send", request.path)
-        assertNotEquals(null, request.headers["Authorization"])
+        assertTrue(request.headers["Authorization"]!!.startsWith("key="))
         assertEquals("""{"to":"/topics/updates2","data":{"count":1}}""", request.body.readUtf8())
     }
 
