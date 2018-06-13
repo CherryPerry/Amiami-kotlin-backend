@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 @RunWith(SpringJUnit4ClassRunner::class)
 class DataControllerTest {
@@ -29,6 +30,10 @@ class DataControllerTest {
         .withZone(ZoneId.of("UTC"))
         .format(Instant.ofEpochMilli(itemRepository.lastModified))
 
+    private val oldLastModifiedString = DateTimeFormatter.RFC_1123_DATE_TIME
+        .withZone(ZoneId.of("UTC"))
+        .format(Instant.ofEpochMilli(itemRepository.lastModified - TimeUnit.DAYS.toMillis(1)))
+
     @Test
     fun testDefaultResponse() {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/data"))
@@ -43,5 +48,12 @@ class DataControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/data")
             .header(HttpHeaders.IF_MODIFIED_SINCE, lastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isNotModified)
+    }
+
+    @Test
+    fun testOldHeader() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/data")
+            .header(HttpHeaders.IF_MODIFIED_SINCE, oldLastModifiedString))
+            .andExpect(MockMvcResultMatchers.status().isOk)
     }
 }

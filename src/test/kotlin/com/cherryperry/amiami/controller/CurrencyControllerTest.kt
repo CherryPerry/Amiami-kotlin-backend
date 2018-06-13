@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 @RunWith(SpringJUnit4ClassRunner::class)
 class CurrencyControllerTest {
@@ -25,15 +26,19 @@ class CurrencyControllerTest {
         .alwaysDo<StandaloneMockMvcBuilder>(MockMvcResultHandlers.print())
         .build()
 
-    private val lastModifiedString = DateTimeFormatter.RFC_1123_DATE_TIME
+    private val validLastModifiedString = DateTimeFormatter.RFC_1123_DATE_TIME
         .withZone(ZoneId.of("UTC"))
         .format(Instant.ofEpochMilli(itemRepository.lastModified))
+
+    private val oldLastModifiedString = DateTimeFormatter.RFC_1123_DATE_TIME
+        .withZone(ZoneId.of("UTC"))
+        .format(Instant.ofEpochMilli(itemRepository.lastModified - TimeUnit.DAYS.toMillis(1)))
 
     @Test
     fun testDefaultResponse() {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency"))
             .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LAST_MODIFIED, lastModifiedString))
+            .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LAST_MODIFIED, validLastModifiedString))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
             .andExpect(MockMvcResultMatchers.content().string("{\"success\":true,\"rates\":{\"USD\":1.0,\"EUR\":1.0}}"))
     }
@@ -41,7 +46,14 @@ class CurrencyControllerTest {
     @Test
     fun testNotModifiedHeader() {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency")
-            .header(HttpHeaders.IF_MODIFIED_SINCE, lastModifiedString))
+            .header(HttpHeaders.IF_MODIFIED_SINCE, validLastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isNotModified)
+    }
+
+    @Test
+    fun testOldHeader() {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency")
+            .header(HttpHeaders.IF_MODIFIED_SINCE, oldLastModifiedString))
+            .andExpect(MockMvcResultMatchers.status().isOk)
     }
 }
