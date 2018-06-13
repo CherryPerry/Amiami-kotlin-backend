@@ -5,11 +5,13 @@ import com.cherryperry.amiami.model.mongodb.Item
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.CacheControl
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.context.request.WebRequest
+import java.util.concurrent.TimeUnit
 
 @RestController
 class DataController @Autowired constructor(
@@ -27,6 +29,10 @@ class DataController @Autowired constructor(
             ResponseEntity.ok()
                 .lastModified(lastModified)
                 .contentType(MediaType.APPLICATION_JSON)
+                .cacheControl(CacheControl
+                    .maxAge(0, TimeUnit.SECONDS)
+                    .staleIfError(7, TimeUnit.DAYS)
+                    .cachePrivate())
                 .body(items)
         }
     }

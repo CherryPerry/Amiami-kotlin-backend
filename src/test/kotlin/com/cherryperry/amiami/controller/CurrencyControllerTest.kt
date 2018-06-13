@@ -40,6 +40,8 @@ class CurrencyControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LAST_MODIFIED, validLastModifiedString))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(MockMvcResultMatchers.header().string(
+                HttpHeaders.CACHE_CONTROL, "max-age=0, private, stale-if-error=604800"))
             .andExpect(MockMvcResultMatchers.content().string("{\"success\":true,\"rates\":{\"USD\":1.0,\"EUR\":1.0}}"))
     }
 
@@ -55,5 +57,7 @@ class CurrencyControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/currency")
             .header(HttpHeaders.IF_MODIFIED_SINCE, oldLastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.header().string(
+                HttpHeaders.CACHE_CONTROL, "max-age=0, private, stale-if-error=604800"))
     }
 }

@@ -40,6 +40,8 @@ class DataControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk)
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.LAST_MODIFIED, lastModifiedString))
             .andExpect(MockMvcResultMatchers.header().string(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(MockMvcResultMatchers.header().string(
+                HttpHeaders.CACHE_CONTROL, "max-age=0, private, stale-if-error=604800"))
             .andExpect(MockMvcResultMatchers.content().string("[{\"url\":\"1\",\"name\":\"2\",\"image\":\"3\",\"price\":\"4\",\"discount\":\"5\",\"time\":6},{\"url\":\"7\",\"name\":\"8\",\"image\":\"9\",\"price\":\"1\",\"discount\":\"2\",\"time\":3}]"))
     }
 
@@ -55,5 +57,7 @@ class DataControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/data")
             .header(HttpHeaders.IF_MODIFIED_SINCE, oldLastModifiedString))
             .andExpect(MockMvcResultMatchers.status().isOk)
+            .andExpect(MockMvcResultMatchers.header().string(
+                HttpHeaders.CACHE_CONTROL, "max-age=0, private, stale-if-error=604800"))
     }
 }
