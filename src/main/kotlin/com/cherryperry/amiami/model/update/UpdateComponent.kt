@@ -75,10 +75,10 @@ class UpdateComponent @Autowired constructor(
 
         // Загружаем а парсим информацию об элементах
         val crawler = ItemCrawler(api)
-        val list = Flowable.fromIterable(arrayListOf(
-            // парсим две категории
-            "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=1298&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt=",
-            "$BASE_URL/top/search/list3?s_condition_flg=1&s_cate2=459&s_sortkey=preowned&pagemax=$PER_PAGE&inctxt2=31&pagecnt="))
+        // 14 = Bishoujo Figure
+        // 15 = Character Figures
+        val list = Flowable.fromArray(14, 15)
+            .map { id -> "$BASE_URL/top/search/list3?s_cate_tag=$id&inc_txt2=31&s_condition_flg=1&s_sortkey=preowned&s_st_condition_flg=1&getcnt=0&pagemax=$PER_PAGE&pagecnt=" }
             .flatMap { crawler.crawlLists(it) }
             .flatMap { crawler.crawlItem(it) }
             .toList()

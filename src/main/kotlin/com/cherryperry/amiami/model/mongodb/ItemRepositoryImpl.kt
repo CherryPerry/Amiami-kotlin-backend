@@ -2,11 +2,10 @@ package com.cherryperry.amiami.model.mongodb
 
 import com.cherryperry.amiami.model.lastmodified.LastModifiedValue
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
 @Repository
-class ItemRepositoryImpl @Autowired constructor(
+class ItemRepositoryImpl constructor(
     private val itemMongoRepository: ItemMongoRepository
 ) : ItemRepository {
 
