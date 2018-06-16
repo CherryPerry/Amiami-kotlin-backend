@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.MongoOperations
 import org.springframework.data.mongodb.core.dropCollection
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
+import java.util.concurrent.TimeUnit
 
 @RunWith(SpringJUnit4ClassRunner::class)
 @ContextConfiguration(classes = [Configuration::class])
@@ -82,5 +83,14 @@ class ItemRepositoryImplTest {
         assertEquals(2, items.size)
         assertTrue(items.contains(item1))
         assertTrue(items.contains(item2))
+    }
+
+    @Test
+    fun testLastModifiedUpdates() {
+        val lastModified = itemRepository.lastModified
+        val item = Item("url", "name", "image", "100", "10", 1)
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1))
+        itemRepository.compareAndSave(item)
+        assertTrue(itemRepository.lastModified > lastModified)
     }
 }
