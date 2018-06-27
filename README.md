@@ -1,6 +1,6 @@
 # Scrapper for pre-owned section of amiami.com
 
-[![Build Status](https://travis-ci.org/CherryPerry/Amiami-kotlin-backend.svg?branch=master)](https://travis-ci.org/CherryPerry/Amiami-kotlin-backend)
+[![Build Status](https://travis-ci.com/CherryPerry/Amiami-kotlin-backend.svg?branch=master)](https://travis-ci.com/CherryPerry/Amiami-kotlin-backend)
 
 This application is a web-server and scrapper for pre-owned section of [amiami.com](http://amiami.com)
 
