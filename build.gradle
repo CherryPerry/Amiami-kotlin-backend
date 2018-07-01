@@ -10,7 +10,8 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.spring' version '1.2.50'
     id 'org.springframework.boot' version '2.0.3.RELEASE'
     id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'org.jmailen.kotlinter' version '1.13.0'
+    id 'org.jmailen.kotlinter' version '1.14.0'
+    id "com.cherryperry.gradle-file-encrypt" version "1.0.75d346d"
 }
 
 group 'com.cherryperry'
@@ -25,6 +26,10 @@ apply from: 'service.gradle'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+gradleFileEncrypt {
+    files = [file('src/main/resources/secure.properties')]
+}
 
 repositories {
     jcenter()
@@ -70,10 +75,10 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-java8:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
 
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.14'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.0.3'
+    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1'
 }

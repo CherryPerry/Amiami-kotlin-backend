@@ -14,8 +14,8 @@ class PushServiceImpl constructor(
 
     companion object {
         private const val PUSH_DATA_TO = "/topics/updates2"
-        private const val PROPERTIES_FILE = "push.properties"
-        private const val PROPERTIES_KEY = "push.server_key"
+        private const val PROPERTIES_FILE = "secure.properties"
+        private const val PROPERTIES_KEY = "firebase.key"
     }
 
     private val log = LogManager.getLogger(PushServiceImpl::class.java)

@@ -17,8 +17,8 @@ class CurrencyRepositoryImpl : CurrencyRepository {
     companion object {
         private const val CURRENCY_JPY = "JPY"
         private const val CURRENCY_EUR = "EUR"
-        private const val PROPERTIES_FILE = "currency.properties"
-        private const val PROPERTIES_KEY = "key"
+        private const val PROPERTIES_FILE = "secure.properties"
+        private const val PROPERTIES_KEY = "fixer.key"
         private val INTERNAL_ERROR_RESPONSE = CurrencyResponse(success = false, error = CurrencyErrorResponse(0, "Internal error"))
     }
 

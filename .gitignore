@@ -6,5 +6,4 @@
 /captures
 /*.log
 /*.html
-push.properties
-currency.properties
+/src/main/resources/secure.properties
