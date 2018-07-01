@@ -6,4 +6,5 @@
 /captures
 /*.log
 /*.html
+/out
 /src/main/resources/secure.properties
