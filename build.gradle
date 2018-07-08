@@ -6,12 +6,12 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.2.50'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.50'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.51'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.51'
     id 'org.springframework.boot' version '2.0.3.RELEASE'
     id 'com.github.ben-manes.versions' version '0.20.0'
     id 'org.jmailen.kotlinter' version '1.14.0'
-    id "com.cherryperry.gradle-file-encrypt" version "1.0.75d346d"
+    id 'com.cherryperry.gradle-file-encrypt' version '1.1.0'
 }
 
 group 'com.cherryperry'
@@ -28,7 +28,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 gradleFileEncrypt {
-    files = [file('src/main/resources/secure.properties')]
+    files 'src/main/resources/secure.properties'
 }
 
 repositories {
