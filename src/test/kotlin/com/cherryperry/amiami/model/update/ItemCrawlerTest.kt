@@ -26,21 +26,24 @@ class ItemCrawlerTest {
     fun before() {
         val api = object : AmiamiHtmlAPI {
             override fun htmlPage(url: String): Single<String> {
-                return Single.just(readResourceToString(when (url) {
-                    URL_TEMPLATE_LIST_MULTI + "1" -> "crawler/crawler_page_list_multi_1.html"
-                    URL_TEMPLATE_LIST_MULTI + "2" -> "crawler/crawler_page_list_multi_2.html"
-                    URL_TEMPLATE_LIST_EMPTY + "1" -> "crawler/crawler_page_list_empty.html"
-                    URL_TEMPLATE_LIST_SINGLE + "1" -> "crawler/crawler_page_list_single.html"
-                    URL_TEMPLATE_ITEM_EMPTY -> "crawler/crawler_page_item_empty.html"
-                    URL_TEMPLATE_ITEM_SINGLE -> "crawler/crawler_page_item_single.html"
-                    URL_TEMPLATE_ITEM_MULTI_1 -> "crawler/crawler_page_item_multi_1.html"
-                    URL_TEMPLATE_ITEM_MULTI_2 -> "crawler/crawler_page_item_multi_2.html"
-                    else -> throw IllegalArgumentException(url)
-                }))
+                return Single.just(htmlPageFromUrl(url))
             }
         }
         itemCrawler = ItemCrawler(api)
     }
+
+    @Suppress("ComplexMethod")
+    private fun htmlPageFromUrl(url: String) = readResourceToString(when (url) {
+        URL_TEMPLATE_LIST_MULTI + "1" -> "crawler/crawler_page_list_multi_1.html"
+        URL_TEMPLATE_LIST_MULTI + "2" -> "crawler/crawler_page_list_multi_2.html"
+        URL_TEMPLATE_LIST_EMPTY + "1" -> "crawler/crawler_page_list_empty.html"
+        URL_TEMPLATE_LIST_SINGLE + "1" -> "crawler/crawler_page_list_single.html"
+        URL_TEMPLATE_ITEM_EMPTY -> "crawler/crawler_page_item_empty.html"
+        URL_TEMPLATE_ITEM_SINGLE -> "crawler/crawler_page_item_single.html"
+        URL_TEMPLATE_ITEM_MULTI_1 -> "crawler/crawler_page_item_multi_1.html"
+        URL_TEMPLATE_ITEM_MULTI_2 -> "crawler/crawler_page_item_multi_2.html"
+        else -> throw IllegalArgumentException(url)
+    })
 
     @Test
     fun crawlListEmpty() {

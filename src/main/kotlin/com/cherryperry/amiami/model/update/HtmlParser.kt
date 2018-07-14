@@ -31,10 +31,10 @@ class HtmlParser(
                 val discount = it.select("li.product_price > span.product_off")?.first()?.text() ?: ""
                 val priceFull = it.select("li.product_price").first().text()
                 val price = priceFull.replace(discount, "")
-                return@mapNotNull ListItem(url, image, price, discount)
+                ListItem(url, image, price, discount)
             } catch (exception: Exception) {
                 log.error("Fail while parsing items list", exception)
-                return@mapNotNull null
+                null
             }
         }
     }

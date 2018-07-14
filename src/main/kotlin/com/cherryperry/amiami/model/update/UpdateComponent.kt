@@ -25,6 +25,10 @@ class UpdateComponent @Autowired constructor(
     companion object {
         private const val PER_PAGE = 50
         private const val BASE_URL = "http://slist.amiami.com"
+        private const val TIMEOUT_SECONDS = 60L
+        private const val CATEGORY_FIGURE_BISHOUJO = 14
+        private const val CATEGORY_FIGURE_CHARACTER = 15
+        private const val PARALLELISM_FACTOR = 8
     }
 
     private val api: AmiamiHtmlAPI
@@ -33,11 +37,11 @@ class UpdateComponent @Autowired constructor(
     private var syncInProgress = AtomicBoolean(false)
 
     init {
-        val scheduler = Schedulers.from(Executors.newScheduledThreadPool(8))
+        val scheduler = Schedulers.from(Executors.newScheduledThreadPool(PARALLELISM_FACTOR))
         val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://127.0.0.1")
@@ -75,10 +79,11 @@ class UpdateComponent @Autowired constructor(
 
         // Загружаем а парсим информацию об элементах
         val crawler = ItemCrawler(api)
-        // 14 = Bishoujo Figure
-        // 15 = Character Figures
-        val list = Flowable.fromArray(14, 15)
-            .map { id -> "$BASE_URL/top/search/list3?s_cate_tag=$id&inc_txt2=31&s_condition_flg=1&s_sortkey=preowned&s_st_condition_flg=1&getcnt=0&pagemax=$PER_PAGE&pagecnt=" }
+        val list = Flowable.fromArray(CATEGORY_FIGURE_BISHOUJO, CATEGORY_FIGURE_CHARACTER)
+            .map { id ->
+                "$BASE_URL/top/search/list3?s_cate_tag=$id&inc_txt2=31&s_condition_flg=1&s_sortkey=preowned" +
+                    "&s_st_condition_flg=1&getcnt=0&pagemax=$PER_PAGE&pagecnt="
+            }
             .flatMap { crawler.crawlLists(it) }
             .flatMap { crawler.crawlItem(it) }
             .toList()
@@ -94,8 +99,8 @@ class UpdateComponent @Autowired constructor(
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++
                 }
-            } catch (e: Exception) {
-                log.error("Failed to download and parse detail page", e)
+            } catch (exception: Exception) {
+                log.error("Failed to download and parse detail page", exception)
             }
         }
 

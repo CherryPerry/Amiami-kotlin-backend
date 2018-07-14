@@ -3,6 +3,7 @@ package com.cherryperry.amiami.controller
 import com.cherryperry.amiami.model.mongodb.Item
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 
+@Suppress("MagicNumber")
 class DataControllerItemRepositoryTestImpl : ItemRepository {
 
     override val lastModified: Long

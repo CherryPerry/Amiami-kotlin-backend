@@ -19,7 +19,8 @@ class CurrencyRepositoryImpl : CurrencyRepository {
         private const val CURRENCY_EUR = "EUR"
         private const val PROPERTIES_FILE = "secure.properties"
         private const val PROPERTIES_KEY = "fixer.key"
-        private val INTERNAL_ERROR_RESPONSE = CurrencyResponse(success = false, error = CurrencyErrorResponse(0, "Internal error"))
+        private val INTERNAL_ERROR_RESPONSE =
+            CurrencyResponse(success = false, error = CurrencyErrorResponse(0, "Internal error"))
     }
 
     private val log = LogManager.getLogger(CurrencyRepositoryImpl::class.java)
@@ -44,15 +45,13 @@ class CurrencyRepositoryImpl : CurrencyRepository {
         api = retrofit.create(CurrencyAPI::class.java)
     }
 
+    @Suppress("ReturnCount")
     override fun get(): CurrencyResponse {
         log.trace("get")
         try {
             semaphore.acquire()
             val cached = cachedResult.get()
-            if (cached != null &&
-                cached.success &&
-                cached.timestamp != null &&
-                System.currentTimeMillis() - cached.timestamp * 1000 < TimeUnit.DAYS.toMillis(1)) {
+            if (cached != null && cached.isUpToDate(TimeUnit.DAYS, 1)) {
                 log.info("cache is valid")
                 semaphore.release()
                 return cached

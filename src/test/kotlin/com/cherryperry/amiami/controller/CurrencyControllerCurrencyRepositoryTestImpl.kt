@@ -3,6 +3,7 @@ package com.cherryperry.amiami.controller
 import com.cherryperry.amiami.model.currency.CurrencyRepository
 import com.cherryperry.amiami.model.currency.CurrencyResponse
 
+@Suppress("MagicNumber")
 class CurrencyControllerCurrencyRepositoryTestImpl : CurrencyRepository {
 
     override val lastModified: Long
