@@ -97,9 +97,9 @@ class UpdateComponent @Autowired constructor(
         var updatedItemsCount = 0
         allItems.asSequence().filterNotNull().forEach { item ->
             try {
-                ids.add(item.url)
                 val dbItem = Item("https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
                     "https://img.amiami.com${item.image}", "${item.minPrice} JPY", "", startTime)
+                ids.add(dbItem.url)
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++
                 }
