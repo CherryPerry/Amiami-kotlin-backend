@@ -3,15 +3,15 @@ package com.cherryperry.amiami.model.update
 import com.cherryperry.amiami.model.mongodb.Item
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 import com.cherryperry.amiami.model.push.PushService
-import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -23,34 +23,37 @@ class UpdateComponent @Autowired constructor(
 ) {
 
     companion object {
-        private const val PER_PAGE = 50
-        private const val BASE_URL = "http://slist.amiami.com"
+        private const val PER_PAGE = 20
         private const val TIMEOUT_SECONDS = 60L
         private const val CATEGORY_FIGURE_BISHOUJO = 14
         private const val CATEGORY_FIGURE_CHARACTER = 15
+        private const val CATEGORY_FIGURE_DOLL = 2
         private const val PARALLELISM_FACTOR = 8
     }
 
-    private val api: AmiamiHtmlAPI
+    private val api: AmiamiJsonApi
     private val log = LogManager.getLogger(UpdateComponent::class.java)
 
     private var syncInProgress = AtomicBoolean(false)
 
     init {
+        val loggingInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { log.info(it) })
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
         val scheduler = Schedulers.from(Executors.newScheduledThreadPool(PARALLELISM_FACTOR))
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
             .build()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://127.0.0.1")
+            .baseUrl(AmiamiJsonApi.BASE_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(scheduler))
-            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(JacksonConverterFactory.create())
             .validateEagerly(true)
             .client(okHttpClient)
             .build()
-        api = retrofit.create(AmiamiHtmlAPI::class.java)
+        api = retrofit.create(AmiamiJsonApi::class.java)
     }
 
     fun sync() {
@@ -78,24 +81,25 @@ class UpdateComponent @Autowired constructor(
         log.info("Sync started at $startTime")
 
         // Загружаем а парсим информацию об элементах
-        val crawler = ItemCrawler(api)
-        val list = Flowable.fromArray(CATEGORY_FIGURE_BISHOUJO, CATEGORY_FIGURE_CHARACTER)
-            .map { id ->
-                "$BASE_URL/top/search/list3?s_cate_tag=$id&inc_txt2=31&s_condition_flg=1&s_sortkey=preowned" +
-                    "&s_st_condition_flg=1&getcnt=0&pagemax=$PER_PAGE&pagecnt="
-            }
-            .flatMap { crawler.crawlLists(it) }
-            .flatMap { crawler.crawlItem(it) }
-            .toList()
-            .blockingGet()
+        val allItems = arrayListOf<AmiamiListItem>()
+        arrayOf(CATEGORY_FIGURE_BISHOUJO, CATEGORY_FIGURE_CHARACTER).forEach {
+            var page: AmiamiApiListResponse
+            var pageNumber = 1
+            do {
+                page = api.items(it, PER_PAGE, pageNumber++).blockingGet()
+                val items = page.items
+                items?.let { allItems += it }
+            } while (page.success && items != null && items.isNotEmpty())
+        }
 
         // Сохраняем элементы в бд, попутно запоманая те, которые участвовали в транзакции
         val ids = ArrayList<String>()
         var updatedItemsCount = 0
-        list.asSequence().filterNotNull().forEach { item ->
+        allItems.asSequence().filterNotNull().forEach { item ->
             try {
                 ids.add(item.url)
-                val dbItem = Item(item.url, item.name, item.image, item.price, item.discount, startTime)
+                val dbItem = Item("https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
+                    "https://img.amiami.com${item.image}", "${item.minPrice} JPY", "", startTime)
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++
                 }
