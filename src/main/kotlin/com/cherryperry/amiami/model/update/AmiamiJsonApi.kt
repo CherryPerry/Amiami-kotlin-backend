@@ -1,9 +1,9 @@
 package com.cherryperry.amiami.model.update
 
-import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
+import java.util.concurrent.CompletableFuture
 
 interface AmiamiJsonApi {
 
@@ -21,9 +21,9 @@ interface AmiamiJsonApi {
         @Query("s_cate_tag") category: Int,
         @Query("pagemax") perPage: Int,
         @Query("pagecnt") page: Int
-    ): Single<AmiamiApiListResponse>
+    ): CompletableFuture<AmiamiApiListResponse>
 
     @GET("item?lang=eng")
     @Headers(value = [HEADER_LANGUAGE, HEADER_USER_AGENT, HEADER_AUTH])
-    fun item(@Query("gcode") itemId: String): Single<AmiamiApiItemResponse>
+    fun item(@Query("gcode") itemId: String): CompletableFuture<AmiamiApiItemResponse>
 }
