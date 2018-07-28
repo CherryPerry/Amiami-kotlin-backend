@@ -40,7 +40,7 @@ class PushServiceImplTest {
     }
 
     @After
-    fun afterAll() {
+    fun after() {
         server.close()
     }
 }

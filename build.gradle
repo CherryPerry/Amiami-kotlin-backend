@@ -66,9 +66,6 @@ repositories {
 }
 
 dependencies {
-    def retrofit_version = '2.4.0'
-    def okhttp_version = '3.11.0'
-
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
@@ -77,17 +74,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.6'
 
-    implementation 'org.jsoup:jsoup:1.11.3'
-
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-jackson:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-scalars:$retrofit_version"
-    implementation "com.squareup.retrofit2:adapter-java8:$retrofit_version"
-
-    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttp_version"
+    testImplementation "com.squareup.okhttp3:mockwebserver:3.11.0"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1'
 }

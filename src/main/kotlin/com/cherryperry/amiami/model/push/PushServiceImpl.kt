@@ -23,6 +23,9 @@ class PushServiceImpl constructor(
 
     private val log = LogManager.getLogger(PushServiceImpl::class.java)
     private val accessKey: String = readProperty(PROPERTIES_FILE) {
+        if (!containsKey(PROPERTIES_KEY)) {
+            throw IllegalStateException("No $PROPERTIES_KEY in $PROPERTIES_FILE found!")
+        }
         getProperty(PROPERTIES_KEY, "no_key")
     }
     private val restTemplate = RestTemplate()

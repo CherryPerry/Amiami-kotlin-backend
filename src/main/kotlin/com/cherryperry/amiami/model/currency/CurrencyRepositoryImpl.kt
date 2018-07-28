@@ -4,9 +4,6 @@ import com.cherryperry.amiami.model.lastmodified.LastModifiedValue
 import com.cherryperry.amiami.util.readProperty
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Repository
-import retrofit2.Retrofit
-import retrofit2.adapter.java8.Java8CallAdapterFactory
-import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
@@ -25,25 +22,18 @@ class CurrencyRepositoryImpl : CurrencyRepository {
 
     private val log = LogManager.getLogger(CurrencyRepositoryImpl::class.java)
     private val accessKey: String = readProperty(PROPERTIES_FILE) {
-        getProperty(PROPERTIES_KEY, "no_key")
+        if (!containsKey(PROPERTIES_KEY)) {
+            throw IllegalStateException("No $PROPERTIES_KEY in $PROPERTIES_FILE found!")
+        }
+        getProperty(PROPERTIES_KEY)
     }
     private val cachedResult = AtomicReference<CurrencyResponse?>()
     private val semaphore = Semaphore(1)
     private val lastModifiedValue = LastModifiedValue()
-    private val api: CurrencyAPI
+    private val currencyRestClient = CurrencyRestClient()
 
     override val lastModified: Long
         get() = lastModifiedValue.value
-
-    init {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(CurrencyAPI.BASE_URL)
-            .addCallAdapterFactory(Java8CallAdapterFactory.create())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .validateEagerly(true)
-            .build()
-        api = retrofit.create(CurrencyAPI::class.java)
-    }
 
     @Suppress("ReturnCount")
     override fun get(): CurrencyResponse {
@@ -57,7 +47,7 @@ class CurrencyRepositoryImpl : CurrencyRepository {
                 return cached
             }
             log.info("cache is invalid")
-            val result = api.currencies(accessKey).get()
+            val result = currencyRestClient.currency(accessKey)
             if (result.success) {
                 if (result.base != CURRENCY_EUR || result.rates == null || !result.rates.containsKey(CURRENCY_JPY)) {
                     log.error("invalid response $result")

@@ -3,14 +3,9 @@ package com.cherryperry.amiami.model.update
 import com.cherryperry.amiami.model.mongodb.Item
 import com.cherryperry.amiami.model.mongodb.ItemRepository
 import com.cherryperry.amiami.model.push.PushService
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import retrofit2.Retrofit
-import retrofit2.adapter.java8.Java8CallAdapterFactory
-import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,36 +16,16 @@ class UpdateComponent @Autowired constructor(
 ) {
 
     companion object {
-        private const val PER_PAGE = 20
-        private const val TIMEOUT_SECONDS = 60L
-        private const val CATEGORY_FIGURE_BISHOUJO = 14
-        private const val CATEGORY_FIGURE_CHARACTER = 15
-        private const val CATEGORY_FIGURE_DOLL = 2
+        const val PER_PAGE = 20
+        const val CATEGORY_FIGURE_BISHOUJO = 14
+        const val CATEGORY_FIGURE_CHARACTER = 15
+        const val CATEGORY_FIGURE_DOLL = 2
     }
 
-    private val api: AmiamiJsonApi
+    private val restClient = AmiamiRestClient()
     private val log = LogManager.getLogger(UpdateComponent::class.java)
 
     private var syncInProgress = AtomicBoolean(false)
-
-    init {
-        val loggingInterceptor = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { log.info(it) })
-        loggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
-        val okHttpClient = OkHttpClient.Builder()
-            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
-            .addInterceptor(loggingInterceptor)
-            .build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(AmiamiJsonApi.BASE_URL)
-            .addCallAdapterFactory(Java8CallAdapterFactory.create())
-            .addConverterFactory(JacksonConverterFactory.create())
-            .validateEagerly(true)
-            .client(okHttpClient)
-            .build()
-        api = retrofit.create(AmiamiJsonApi::class.java)
-    }
 
     fun sync() {
         log.trace("sync")
@@ -82,7 +57,7 @@ class UpdateComponent @Autowired constructor(
             var page: AmiamiApiListResponse
             var pageNumber = 1
             do {
-                page = api.items(it, PER_PAGE, pageNumber++).get()
+                page = restClient.items(it, PER_PAGE, pageNumber++)
                 val items = page.items
                 items?.let { allItems += it }
             } while (page.success && items != null && items.isNotEmpty())
