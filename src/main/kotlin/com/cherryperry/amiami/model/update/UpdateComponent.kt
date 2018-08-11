@@ -59,7 +59,7 @@ class UpdateComponent @Autowired constructor(
             do {
                 page = restClient.items(it, PER_PAGE, pageNumber++)
                 val items = page.items
-                items?.let { allItems += it }
+                items?.let { allItems += it.filter { it.hasPrice } }
             } while (page.success && items != null && items.isNotEmpty())
         }
 
@@ -69,7 +69,7 @@ class UpdateComponent @Autowired constructor(
         allItems.asSequence().filterNotNull().forEach { item ->
             try {
                 val dbItem = Item("https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
-                    "https://img.amiami.com${item.image}", "${item.minPrice} JPY", "", startTime)
+                    "https://img.amiami.com${item.image}", "${item.price} JPY", "", startTime)
                 ids.add(dbItem.url)
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++

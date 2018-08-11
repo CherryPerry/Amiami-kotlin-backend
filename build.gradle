@@ -6,11 +6,11 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.2.51'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.51'
-    id 'org.springframework.boot' version '2.0.3.RELEASE'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.60'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.60'
+    id 'org.springframework.boot' version '2.0.4.RELEASE'
     id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'org.jmailen.kotlinter' version '1.15.0'
+    id 'org.jmailen.kotlinter' version '1.16.0'
     id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC8'
     id 'com.cherryperry.gradle-file-encrypt' version '1.2.0'
 }
