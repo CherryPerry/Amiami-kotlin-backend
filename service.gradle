@@ -6,7 +6,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.PosixFilePermission
 
-task startService {
+tasks.register('startService') {
     group 'service'
     description 'Starts service, if installed'
 
@@ -19,7 +19,7 @@ task startService {
     }
 }
 
-task stopService {
+tasks.register('stopService') {
     group 'service'
     description 'Stops service, if installed'
 
@@ -32,11 +32,10 @@ task stopService {
     }
 }
 
-task installService {
+tasks.register('installService') {
     group 'service'
     description 'Builds and installs service'
-    dependsOn bootJar, stopService
-    tasks.findByName('stopService').mustRunAfter 'bootJar'
+    dependsOn tasks.named('bootJar'), tasks.named('stopService')
 
     // TODO Устанавливать сервис как сервис пользователя, а не системный
     doLast {
@@ -69,7 +68,7 @@ WantedBy=multi-user.target
             exec { commandLine 'systemctl', 'enable', 'amiami.service' }
             exec { commandLine 'systemctl', 'restart', 'amiami.service' }
         } else {
-            println 'Unsupported OS'
+            logger.warn 'Unsupported OS'
         }
     }
 }
