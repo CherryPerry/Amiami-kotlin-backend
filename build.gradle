@@ -6,12 +6,12 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.2.61'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.61'
-    id 'org.springframework.boot' version '2.0.4.RELEASE'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.70'
+    id 'org.jetbrains.kotlin.plugin.spring' version '1.2.70'
+    id 'org.springframework.boot' version '2.0.5.RELEASE'
     id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'org.jmailen.kotlinter' version '1.16.0'
-    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC8'
+    id 'org.jmailen.kotlinter' version '1.18.0'
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC9'
     id 'com.cherryperry.gradle-file-encrypt' version '1.2.0'
 }
 
@@ -34,14 +34,12 @@ gradleFileEncrypt {
 }
 
 detekt {
-    defaultProfile {
-        config = file("detekt.yml")
-        input = "src/main/kotlin;src/test/kotlin"
-        filters = "do-not-use-it"
-    }
+    toolVersion = '1.0.0.RC9'
+    config = files('detekt.yml')
+    // TODO Add src/test/kotlin after bug fix
+    input = files('src/main/kotlin')
+    filters = 'do-not-use-it'
 }
-
-check.dependsOn detektCheck
 
 compileKotlin {
     kotlinOptions.jvmTarget = '1.8'
@@ -74,9 +72,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.6'
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7'
 
-    testImplementation "com.squareup.okhttp3:mockwebserver:3.11.0"
+    testImplementation 'com.squareup.okhttp3:mockwebserver:3.11.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1'
 }
