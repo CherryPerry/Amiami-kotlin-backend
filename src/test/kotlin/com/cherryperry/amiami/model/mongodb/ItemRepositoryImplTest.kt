@@ -93,4 +93,15 @@ class ItemRepositoryImplTest {
         itemRepository.compareAndSave(item)
         assertTrue(itemRepository.lastModified > lastModified)
     }
+
+    @Test
+    fun testResultsAreSorted() {
+        val item1 = Item("url1", "name", "image", "100", "10", 1)
+        val item2 = Item("url2", "name", "image", "200", "20", 2)
+        itemRepository.compareAndSave(item1)
+        itemRepository.compareAndSave(item2)
+        val items = itemRepository.items()
+        assertEquals(2, items.size)
+        assertEquals(listOf(item2, item1), items)
+    }
 }

@@ -2,6 +2,7 @@ package com.cherryperry.amiami.model.mongodb
 
 import com.cherryperry.amiami.model.lastmodified.LastModifiedValue
 import org.apache.logging.log4j.LogManager
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -17,7 +18,7 @@ class ItemRepositoryImpl constructor(
 
     override fun items(): Collection<Item> {
         log.trace("items")
-        return itemMongoRepository.findAll()
+        return itemMongoRepository.findAll(Sort.by(Sort.Direction.DESC, "time"))
     }
 
     override fun compareAndSave(item: Item): Boolean {
