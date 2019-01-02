@@ -39,8 +39,8 @@ class UpdateComponent @Autowired constructor(
         }
         try {
             doSync()
-        } catch (exception: Exception) {
-            log.error(exception)
+        } catch (expected: Exception) {
+            log.error(expected)
         } finally {
             syncInProgress.set(false)
         }
@@ -74,8 +74,8 @@ class UpdateComponent @Autowired constructor(
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++
                 }
-            } catch (exception: Exception) {
-                log.error("Failed to download and parse detail page", exception)
+            } catch (expected: Exception) {
+                log.error("Failed to download and parse detail page", expected)
             }
         }
 

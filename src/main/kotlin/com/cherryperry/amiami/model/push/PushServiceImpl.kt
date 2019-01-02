@@ -34,8 +34,8 @@ class PushServiceImpl constructor(
         try {
             sendPushMessage(PushRequest(PUSH_DATA_TO, PushCountPayload(count)))
             log.info("Push notification was sent")
-        } catch (exception: Exception) {
-            log.error("Failed to send push notification", exception)
+        } catch (expected: Exception) {
+            log.error("Failed to send push notification", expected)
         }
     }
 
@@ -43,8 +43,8 @@ class PushServiceImpl constructor(
         try {
             sendPushMessage(PushRequest(token, PushCountPayload(count)))
             log.info("Push notification was sent")
-        } catch (exception: Exception) {
-            log.error("Failed to send push notification", exception)
+        } catch (expected: Exception) {
+            log.error("Failed to send push notification", expected)
         }
     }
 

@@ -8,7 +8,7 @@ plugins {
     id("org.springframework.boot") version "2.1.1.RELEASE"
     id("com.github.ben-manes.versions") version "0.20.0"
     id("org.jmailen.kotlinter") version "1.20.1"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0.RC9.2"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC12"
     id("com.cherryperry.gradle-file-encrypt") version "1.3.0"
 }
 
@@ -20,21 +20,20 @@ apply {
     from("service.gradle")
 }
 
-configure<JavaPluginConvention> {
+java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-configure<FileEncryptPluginExtension> {
+gradleFileEncrypt {
     files = arrayOf("src/main/resources/secure.properties")
     mapping = mapOf("src/main/resources/secure.properties" to "secure.properties")
 }
 
 detekt {
-    toolVersion = "1.0.0.RC9.2"
+    toolVersion = "1.0.0-RC12"
     config = files("detekt.yml")
     input = files("src/main/kotlin", "src/test/kotlin")
-    filters = "do-not-use-it"
 }
 
 tasks.withType<KotlinCompile> {

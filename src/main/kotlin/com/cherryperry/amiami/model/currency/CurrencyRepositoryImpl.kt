@@ -66,8 +66,8 @@ class CurrencyRepositoryImpl : CurrencyRepository {
                 log.info("currency api returns error $result")
                 return cached ?: result
             }
-        } catch (exception: Exception) {
-            log.error("currency api throws exception", exception)
+        } catch (expected: Exception) {
+            log.error("currency api throws exception", expected)
             val cached = cachedResult.get()
             return cached ?: INTERNAL_ERROR_RESPONSE
         } finally {
