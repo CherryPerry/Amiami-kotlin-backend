@@ -70,5 +70,5 @@ dependencies {
 
     testImplementation("com.squareup.okhttp3:mockwebserver:3.12.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1")
+    testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.2.0")
 }
