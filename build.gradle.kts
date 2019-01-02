@@ -66,7 +66,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.7")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
 
     testImplementation("com.squareup.okhttp3:mockwebserver:3.12.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
