@@ -5,7 +5,7 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.3.11"
     id("org.jetbrains.kotlin.plugin.spring") version "1.3.11"
-    id("org.springframework.boot") version "2.1.0.RELEASE"
+    id("org.springframework.boot") version "2.1.1.RELEASE"
     id("com.github.ben-manes.versions") version "0.20.0"
     id("org.jmailen.kotlinter") version "1.20.1"
     id("io.gitlab.arturbosch.detekt") version "1.0.0.RC9.2"
