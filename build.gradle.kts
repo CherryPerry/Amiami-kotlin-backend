@@ -68,7 +68,7 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.8")
 
-    testImplementation("com.squareup.okhttp3:mockwebserver:3.12.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:3.12.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1")
 }
