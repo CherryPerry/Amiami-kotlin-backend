@@ -28,12 +28,12 @@ class ItemRepositoryImplTest {
 
     @Before
     fun before() {
-        mongoOperations.dropCollection(Item::class)
+        mongoOperations.dropCollection<Item>()
     }
 
     @After
     fun after() {
-        mongoOperations.dropCollection(Item::class)
+        mongoOperations.dropCollection<Item>()
     }
 
     @Test
