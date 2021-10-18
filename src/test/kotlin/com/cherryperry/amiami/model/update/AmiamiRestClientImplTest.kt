@@ -14,15 +14,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner
 import org.springframework.web.client.HttpServerErrorException
 
 @RunWith(SpringJUnit4ClassRunner::class)
-class AmiamiRestClientTest {
+class AmiamiRestClientImplTest {
 
     private lateinit var server: MockWebServer
-    private lateinit var amiamiRestClient: AmiamiRestClient
+    private lateinit var amiamiRestClient: AmiamiRestClientImpl
 
     @Before
     fun before() {
         server = MockWebServer()
-        amiamiRestClient = AmiamiRestClient(server.url("/").toString())
+        amiamiRestClient = AmiamiRestClientImpl(server.url("/").toString())
     }
 
     @Test

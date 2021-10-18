@@ -6,13 +6,16 @@ import com.cherryperry.amiami.model.push.PushService
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.thread
 
 @Component
 class UpdateComponent @Autowired constructor(
     private val itemRepository: ItemRepository,
-    private val pushService: PushService
+    private val pushService: PushService,
+    private val restClient: AmiamiRestClient,
+    private val timeout: Pair<Long, TimeUnit> = DEFAULT_TIMEOUT_SECONDS to TimeUnit.SECONDS,
 ) {
 
     companion object {
@@ -20,30 +23,42 @@ class UpdateComponent @Autowired constructor(
         const val CATEGORY_FIGURE_BISHOUJO = 14
         const val CATEGORY_FIGURE_CHARACTER = 15
         const val CATEGORY_FIGURE_DOLL = 2
+        const val DEFAULT_TIMEOUT_SECONDS = 5L
     }
 
-    private val restClient = AmiamiRestClient()
     private val log = LogManager.getLogger(UpdateComponent::class.java)
-
-    private var syncInProgress = AtomicBoolean(false)
+    private var threadCounter = 0
+    private var syncInProgress = false
 
     fun sync() {
         log.trace("sync")
-        synchronized(syncInProgress) {
-            val sync = syncInProgress.get()
-            if (sync) {
+
+        synchronized(this) {
+            if (syncInProgress) {
                 log.warn("Sync already in progress!")
                 return
             }
-            syncInProgress.set(true)
+            syncInProgress = true
         }
-        try {
-            doSync()
-        } catch (expected: Exception) {
-            log.error(expected)
-        } finally {
-            syncInProgress.set(false)
+
+        val countDownLatch = CountDownLatch(1)
+
+        val thread = thread(name = "SyncThread#${threadCounter++}") {
+            try {
+                doSync()
+            } catch (expected: Exception) {
+                log.error(expected)
+            } finally {
+                countDownLatch.countDown()
+            }
         }
+
+        // if sync is stuck – interrupt it
+        val success = countDownLatch.await(timeout.first, timeout.second)
+        if (!success) thread.interrupt()
+
+        synchronized(this) { syncInProgress = false }
+
     }
 
     private fun doSync() {
@@ -68,8 +83,10 @@ class UpdateComponent @Autowired constructor(
         var updatedItemsCount = 0
         allItems.asSequence().filterNotNull().forEach { item ->
             try {
-                val dbItem = Item("https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
-                    "https://img.amiami.com${item.image}", "${item.price} JPY", "", startTime)
+                val dbItem = Item(
+                    "https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
+                    "https://img.amiami.com${item.image}", "${item.price} JPY", "", startTime
+                )
                 ids.add(dbItem.url)
                 if (itemRepository.compareAndSave(dbItem)) {
                     updatedItemsCount++

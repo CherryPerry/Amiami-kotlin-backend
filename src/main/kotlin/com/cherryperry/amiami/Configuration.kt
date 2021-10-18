@@ -7,6 +7,8 @@ import com.cherryperry.amiami.model.mongodb.ItemRepository
 import com.cherryperry.amiami.model.mongodb.ItemRepositoryImpl
 import com.cherryperry.amiami.model.push.PushService
 import com.cherryperry.amiami.model.push.PushServiceImpl
+import com.cherryperry.amiami.model.update.AmiamiRestClient
+import com.cherryperry.amiami.model.update.AmiamiRestClientImpl
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,6 +22,9 @@ class Configuration {
 
     @Bean
     fun pushService(): PushService = PushServiceImpl()
+
+    @Bean
+    fun amiamiRestClient(): AmiamiRestClient = AmiamiRestClientImpl()
 
     @Bean
     fun itemRepository(itemMongoRepository: ItemMongoRepository): ItemRepository =
