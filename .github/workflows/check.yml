@@ -1,20 +1,24 @@
 name: Check
-on: [push]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Set up JDK
-      uses: actions/setup-java@v2
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
         java-version: '11'
-        cache: 'gradle'
-    - name: Decrypt
+    - uses: gradle/wrapper-validation-action@v1
+    - uses: gradle/gradle-build-action@v2
       env:
         GFE_PASSWORD: ${{ secrets.GFE_PASSWORD }}
-      run: ./gradlew decryptFiles
-    - name: Check
-      run: ./gradlew check
+      with:
+        arguments: decryptFiles
+    - uses: gradle/gradle-build-action@v2
+      with:
+        arguments: check
