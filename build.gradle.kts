@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.5.31"
@@ -9,7 +9,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.39.0"
     id("se.ascp.gradle.gradle-versions-filter") version "0.1.10"
     id("io.gitlab.arturbosch.detekt") version "1.18.1"
-    id("com.cherryperry.gradle-file-encrypt") version "1.4.0"
+    id("com.cherryperry.gradle-file-encrypt") version "2.0.0"
 }
 
 group = "com.cherryperry"
@@ -25,8 +25,8 @@ java {
 }
 
 gradleFileEncrypt {
-    files = arrayOf("src/main/resources/secure.properties")
-    mapping = mapOf("src/main/resources/secure.properties" to "secure.properties")
+    plainFiles.from("src/main/resources/secure.properties")
+    mapping.put("src/main/resources/secure.properties", "secure.properties")
 }
 
 detekt {
