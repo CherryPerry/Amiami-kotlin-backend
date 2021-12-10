@@ -21,3 +21,4 @@ jobs:
         arguments: |
           decryptFiles
           check
+          -DGFE_PASSWORD=${{ secrets.GFE_PASSWORD }}
