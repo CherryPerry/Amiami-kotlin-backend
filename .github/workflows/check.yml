@@ -18,7 +18,6 @@ jobs:
       env:
         GFE_PASSWORD: ${{ secrets.GFE_PASSWORD }}
       with:
-        arguments: decryptFiles
-    - uses: gradle/gradle-build-action@v2
-      with:
-        arguments: check
+        arguments: |
+          decryptFiles
+          check
