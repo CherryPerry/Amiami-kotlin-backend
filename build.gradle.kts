@@ -54,6 +54,16 @@ repositories {
 }
 
 dependencies {
+    constraints {
+        implementation("org.apache.logging.log4j:log4j-core") {
+            version {
+                strictly("[2.15,3[")
+                prefer("2.15.0")
+            }
+            because("CVE-2021-44228")
+        }
+    }
+
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.5.31"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
