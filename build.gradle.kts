@@ -57,8 +57,8 @@ dependencies {
     constraints {
         implementation("org.apache.logging.log4j:log4j-core") {
             version {
-                strictly("[2.15,3[")
-                prefer("2.15.0")
+                strictly("[2.17.1,3[")
+                prefer("2.17.1")
             }
             because("CVE-2021-44228")
         }
