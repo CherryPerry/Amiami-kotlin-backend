@@ -41,6 +41,7 @@ class CurrencyRepositoryImpl : CurrencyRepository {
         try {
             lock.lock()
             val cached = cachedResult.get()
+            log.info("cached $cached")
             if (cached != null && cached.isUpToDate(TimeUnit.DAYS, 1)) {
                 log.info("cache is valid")
                 return cached
@@ -48,12 +49,12 @@ class CurrencyRepositoryImpl : CurrencyRepository {
             log.info("cache is invalid")
             val result = currencyRestClient.currency(accessKey)
             if (result.success) {
-                if (result.base != CURRENCY_EUR || result.rates == null || !result.rates.containsKey(CURRENCY_JPY)) {
+                val jpyRate = result.rates?.get(CURRENCY_JPY)
+                if (result.base != CURRENCY_EUR || jpyRate == null) {
                     log.error("invalid response $result")
                     return INTERNAL_ERROR_RESPONSE
                 }
                 log.info("valid response $result")
-                val jpyRate = result.rates[CURRENCY_JPY]!!
                 val newRates = result.rates.mapValues { it.value / jpyRate }
                 val newResult = CurrencyResponse(
                     success = true,
@@ -63,7 +64,7 @@ class CurrencyRepositoryImpl : CurrencyRepository {
                     rates = newRates,
                 )
                 log.info("calculated response $newResult")
-                this.cachedResult.set(newResult)
+                cachedResult.set(newResult)
                 lastModifiedValue.update()
                 return newResult
             } else {
