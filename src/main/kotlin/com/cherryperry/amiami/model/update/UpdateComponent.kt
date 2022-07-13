@@ -15,7 +15,7 @@ class UpdateComponent @Autowired constructor(
     private val itemRepository: ItemRepository,
     private val pushService: PushService,
     private val restClient: AmiamiRestClient,
-    private val timeout: Pair<Long, TimeUnit> = DEFAULT_TIMEOUT_SECONDS to TimeUnit.SECONDS,
+    private val timeout: Pair<Long, TimeUnit> = DEFAULT_TIMEOUT_MINUTES to TimeUnit.MINUTES,
 ) {
 
     companion object {
@@ -23,7 +23,7 @@ class UpdateComponent @Autowired constructor(
         const val CATEGORY_FIGURE_BISHOUJO = 14
         const val CATEGORY_FIGURE_CHARACTER = 15
         const val CATEGORY_FIGURE_DOLL = 2
-        const val DEFAULT_TIMEOUT_SECONDS = 5L
+        const val DEFAULT_TIMEOUT_MINUTES = 5L
     }
 
     private val log = LogManager.getLogger(UpdateComponent::class.java)
@@ -81,7 +81,7 @@ class UpdateComponent @Autowired constructor(
         // Сохраняем элементы в бд, попутно запоманая те, которые участвовали в транзакции
         val ids = ArrayList<String>()
         var updatedItemsCount = 0
-        allItems.asSequence().filterNotNull().forEach { item ->
+        allItems.forEach { item ->
             try {
                 val dbItem = Item(
                     "https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
@@ -93,6 +93,9 @@ class UpdateComponent @Autowired constructor(
                 }
             } catch (expected: Exception) {
                 log.error("Failed to download and parse detail page", expected)
+            }
+            if (Thread.interrupted()) {
+                return
             }
         }
 
