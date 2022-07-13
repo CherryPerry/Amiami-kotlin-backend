@@ -81,7 +81,7 @@ class UpdateComponent @Autowired constructor(
         // Сохраняем элементы в бд, попутно запоманая те, которые участвовали в транзакции
         val ids = ArrayList<String>()
         var updatedItemsCount = 0
-        allItems.asSequence().filterNotNull().forEach { item ->
+        allItems.forEach { item ->
             try {
                 val dbItem = Item(
                     "https://www.amiami.com/eng/detail/?gcode=${item.url}", item.name ?: "",
@@ -93,6 +93,9 @@ class UpdateComponent @Autowired constructor(
                 }
             } catch (expected: Exception) {
                 log.error("Failed to download and parse detail page", expected)
+            }
+            if (Thread.interrupted()) {
+                return
             }
         }
 
